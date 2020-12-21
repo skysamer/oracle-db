@@ -1,0 +1,278 @@
+DROP TABLE dept CASCADE CONSTRAINTS PURGE ;
+CREATE TABLE dept 
+(deptno   NUMBER(2),
+ dname    VARCHAR2(14), 
+ loc      VARCHAR2(13)); 
+
+INSERT INTO dept VALUES(10,'ACCOUNTING','NEW YORK');
+INSERT INTO dept VALUES(20,'RESEARCH','DALLAS');
+INSERT INTO dept VALUES(30,'SALES','CHICAGO');
+INSERT INTO dept VALUES(40,'OPERATIONS','BOSTON');
+
+COMMIT ; 
+
+
+ALTER TABLE dept ADD CONSTRAINT dept_pk PRIMARY KEY(deptno) ; 
+
+DROP TABLE emp CASCADE CONSTRAINTS PURGE ; 
+CREATE TABLE emp 
+(empno    NUMBER(4), 
+ ename    VARCHAR2(10),
+ job      VARCHAR2(9),
+ mgr      NUMBER(4),
+ hiredate DATE,
+ sal      NUMBER(7,2),
+ comm     NUMBER(7,2),
+ deptno   NUMBER(2));
+
+INSERT INTO emp VALUES(7788,'SCOTT','ANALYST',7566,TO_DATE('1987/04/19','YYYY/MM/DD'),3000,NULL,20);
+INSERT INTO emp VALUES(7566,'JONES','MANAGER',7839,TO_DATE('1981/04/02','YYYY/MM/DD'),2975,NULL,20);
+INSERT INTO emp VALUES(7369,'SMITH','CLERK',7902,TO_DATE('1980/12/17 13:15:09','YYYY/MM/DD HH24:MI:SS'),800,NULL,20);
+INSERT INTO emp VALUES(7876,'ADAMS','CLERK',7788,TO_DATE('1987/05/23','YYYY/MM/DD'),1100,NULL,20);
+INSERT INTO emp VALUES(7499,'ALLEN','SALESMAN',7698,TO_DATE('1981/02/20','YYYY/MM/DD'),1600,300,30);
+INSERT INTO emp VALUES(7521,'WARD','SALESMAN',7698,TO_DATE('1981/02/22','YYYY/MM/DD'),1250,500,30);
+INSERT INTO emp VALUES(7654,'MARTIN','SALESMAN',7698,TO_DATE('1981/09/28','YYYY/MM/DD'),1250,1400,30);
+INSERT INTO emp VALUES(7698,'BLAKE','MANAGER',7839,TO_DATE('1981/05/01','YYYY/MM/DD'),2850,NULL,30);
+INSERT INTO emp VALUES(7782,'CLARK','MANAGER',7839,TO_DATE('1981/06/09','YYYY/MM/DD'),2450,NULL,10);
+INSERT INTO emp VALUES(7844,'TURNER','SALESMAN',7698,TO_DATE('1981/09/08','YYYY/MM/DD'),1500,0,30);
+INSERT INTO emp VALUES(7900,'JAMES','CLERK',7698,TO_DATE('1981/12/03','YYYY/MM/DD'),950,NULL,30);
+INSERT INTO emp VALUES(7902,'FORD','ANALYST',7566,TO_DATE('1981/12/03','YYYY/MM/DD'),3000,NULL,20);
+INSERT INTO emp VALUES(7934,'MILLER','CLERK',7782,TO_DATE('1982/01/23','YYYY/MM/DD'),1300,NULL,10);
+INSERT INTO emp VALUES(7839,'KING','PRESIDENT',NULL,TO_DATE('1981/11/17','YYYY/MM/DD'),5000,NULL,10);
+
+COMMIT ; 
+
+
+ALTER TABLE emp ADD CONSTRAINT emp_pk PRIMARY KEY(empno) ; 
+ALTER TABLE emp ADD CONSTRAINT emp_deptno_fk FOREIGN KEY(deptno) REFERENCES dept(deptno) ; 
+ 
+DROP TABLE salgrade CASCADE CONSTRAINTS PURGE ; 
+CREATE TABLE salgrade
+(grade   NUMBER,
+ losal   NUMBER,
+ hisal   NUMBER);
+
+INSERT INTO salgrade VALUES(1, 700,1200);
+INSERT INTO salgrade VALUES(2,1201,1400);
+INSERT INTO salgrade VALUES(3,1401,2000);
+INSERT INTO salgrade VALUES(4,2001,3000);
+INSERT INTO salgrade VALUES(5,3001,9999);
+
+COMMIT ; 
+
+ALTER TABLE salgrade ADD CONSTRAINT salg_pk PRIMARY KEY(grade) ;
+
+DROP TABLE regions CASCADE CONSTRAINTS PURGE ; 
+CREATE TABLE regions
+(region_id      NUMBER, 
+ region_name    VARCHAR2(25)); 
+
+INSERT INTO regions VALUES (1,'Europe');
+INSERT INTO regions VALUES (2,'Americas');
+INSERT INTO regions VALUES (3,'Asia');
+INSERT INTO regions VALUES (4,'Middle East and Africa');
+COMMIT ; 
+
+
+ALTER TABLE regions ADD CONSTRAINT regions_pk_regid PRIMARY KEY(region_id) ; 
+
+DROP TABLE countries CASCADE CONSTRAINTS PURGE ;
+CREATE TABLE countries 
+(country_id      CHAR(2), 
+ country_name    VARCHAR2(40), 
+ region_id       NUMBER) ; 
+
+INSERT INTO countries VALUES('US','United States of America',2);
+INSERT INTO countries VALUES('CA','Canada',2);
+INSERT INTO countries VALUES('UK','United Kingdom',1);
+INSERT INTO countries VALUES('DE','Germany',1);
+
+COMMIT ; 
+
+
+ALTER TABLE countries ADD CONSTRAINT countries_pk_ctyid PRIMARY KEY(country_id) ; 
+ALTER TABLE countries ADD CONSTRAINT countries_fk_regid FOREIGN KEY(region_id) REFERENCES regions(region_id) ; 
+
+DROP TABLE locations CASCADE CONSTRAINTS PURGE ; 
+CREATE TABLE locations
+(location_id    NUMBER(4), 
+ street_address VARCHAR2(40), 
+ postal_code    VARCHAR2(12),
+ city           VARCHAR2(30), 
+ state_province VARCHAR2(25),
+ country_id     CHAR(2)); 
+
+INSERT INTO locations VALUES(1400,'2014 Jabberwocky Rd','26192','Southlake','Texas','US');
+INSERT INTO locations VALUES(1500,'2011 Interiors Blvd','99236','South San Francisco','California','US');
+INSERT INTO locations VALUES(1700,'2004 Charade Rd','98199','Seattle','Washington','US');
+INSERT INTO locations VALUES(1800,'460 Bloor St. W.','ON M5S 1X8','Toronto','Ontario','CA');
+INSERT INTO locations VALUES(2500,'Magdalen Centre, The Oxford Science Park','OX9 9ZB','Oxford','Oxford','UK');
+
+COMMIT ; 
+
+ALTER TABLE locations ADD CONSTRAINT locations_pk_locid PRIMARY KEY(location_id) ; 
+ALTER TABLE locations ADD CONSTRAINT locations_fk_ctyid FOREIGN KEY(country_id) REFERENCES countries(country_id) ; 
+
+       
+DROP TABLE departments CASCADE CONSTRAINTS PURGE ; 
+CREATE TABLE departments
+(department_id     NUMBER(4,0),
+ department_name   VARCHAR2(30),
+ manager_id        NUMBER (6,0),
+ location_id       NUMBER(4,0)) ; 
+
+INSERT INTO departments VALUES (10,'Administration',200,1700);
+INSERT INTO departments VALUES (20,'Marketing',201,1800);
+INSERT INTO departments VALUES (50,'Shipping',124,1500);
+INSERT INTO departments VALUES (60,'IT',103,1400);
+INSERT INTO departments VALUES (80,'Sales',149,2500);
+INSERT INTO departments VALUES (90,'Executive',100,1700);
+INSERT INTO departments VALUES (110,'Accounting',205,1700);
+INSERT INTO departments VALUES (190,'Contracting',NULL,1700);
+
+COMMIT ; 
+
+
+ALTER TABLE departments ADD CONSTRAINT departments_pk_deptid PRIMARY KEY(department_id) ; 
+ALTER TABLE departments ADD CONSTRAINT departments_fk_locid  FOREIGN KEY(location_id) REFERENCES locations(location_id) ; 
+
+DROP TABLE jobs CASCADE CONSTRAINTS PURGE;
+CREATE TABLE jobs 
+(job_id      VARCHAR2(10), 
+ job_title   VARCHAR2(35), 
+ min_salary  NUMBER(6), 
+ max_salary  NUMBER(6)) ; 
+
+INSERT INTO jobs VALUES('AD_PRES','President',20080,40000);
+INSERT INTO jobs VALUES('AD_VP','Administration Vice President',15000,30000);
+INSERT INTO jobs VALUES('AD_ASST','Administration Assistant',3000,6000);
+INSERT INTO jobs VALUES('AC_MGR','Accounting Manager',8200,16000);
+INSERT INTO jobs VALUES('AC_ACCOUNT','Public Accountant',4200,9000);
+INSERT INTO jobs VALUES('SA_MAN','Sales Manager',10000,20080);
+INSERT INTO jobs VALUES('SA_REP','Sales Representative',6000,12008);
+INSERT INTO jobs VALUES('ST_MAN','Stock Manager',5500,8500);
+INSERT INTO jobs VALUES('ST_CLERK','Stock Clerk',2008,5000);
+INSERT INTO jobs VALUES('IT_PROG','Programmer',4000,10000);
+INSERT INTO jobs VALUES('MK_MAN','Marketing Manager',9000,15000);
+INSERT INTO jobs VALUES('MK_REP','Marketing Representative',4000,9000);
+
+COMMIT ; 
+
+
+ALTER TABLE jobs ADD CONSTRAINT jobs_pk_jobid PRIMARY KEY(job_id) ; 
+       
+DROP TABLE employees CASCADE CONSTRAINTS PURGE ;
+CREATE TABLE employees
+(employee_id      NUMBER(6,0),
+ first_name       VARCHAR2(20),
+ last_name        VARCHAR2(25),
+ email            VARCHAR2(25),
+ phone_number     VARCHAR2(20),
+ hire_date        DATE,
+ job_id           VARCHAR2(10),
+ salary           NUMBER(8,2),
+ commission_pct   NUMBER(2,2),
+ manager_id       NUMBER(6,0),
+ department_id    NUMBER(4,0)) ;
+
+INSERT INTO employees VALUES(200,'Jennifer','Whalen','JWHALEN','515.123.4444',TO_DATE('2003/09/17','YYYY/MM/DD'),'AD_ASST',4400,NULL,101,10);
+INSERT INTO employees VALUES(201,'Michael','Hartstein','MHARTSTE','515.123.5555',TO_DATE('2004/02/17','YYYY/MM/DD'),'MK_MAN',13000,NULL,100,20);
+INSERT INTO employees VALUES(202,'Pat','Fay','PFAY','603.123.6666',TO_DATE('2005/08/17','YYYY/MM/DD'),'MK_REP',6000,NULL,201,20);
+INSERT INTO employees VALUES(205,'Shelley','Higgins','SHIGGINS','515.123.8080',TO_DATE('2002/06/07','YYYY/MM/DD'),'AC_MGR',12008,NULL,101,110);
+INSERT INTO employees VALUES(206,'William','Gietz','WGIETZ','515.123.8181',TO_DATE('2002/06/07','YYYY/MM/DD'),'AC_ACCOUNT',8300,NULL,205,110);
+INSERT INTO employees VALUES(100,'Steven','King','SKING','515.123.4567',TO_DATE('2003/06/17','YYYY/MM/DD'),'AD_PRES',24000,NULL,NULL,90);
+INSERT INTO employees VALUES(101,'Neena','Kochhar','NKOCHHAR','515.123.4568',TO_DATE('2005/09/21','YYYY/MM/DD'),'AD_VP',17000,NULL,100,90);
+INSERT INTO employees VALUES(102,'Lex','De Haan','LDEHAAN','515.123.4569',TO_DATE('2001/01/13','YYYY/MM/DD'),'AD_VP',17000,NULL,100,90);
+INSERT INTO employees VALUES(103,'Alexander','Hunold','AHUNOLD','590.423.4567',TO_DATE('2006/01/03','YYYY/MM/DD'),'IT_PROG',9000,NULL,102,60);
+INSERT INTO employees VALUES(104,'Bruce','Ernst','BERNST','590.423.4568',TO_DATE('2007/05/21','YYYY/MM/DD'),'IT_PROG',6000,NULL,103,60);
+INSERT INTO employees VALUES(107,'Diana','Lorentz','DLORENTZ','590.423.5567',TO_DATE('2007/02/07','YYYY/MM/DD'),'IT_PROG',4200,NULL,103,60);
+INSERT INTO employees VALUES(124,'Kevin','Mourgos','KMOURGOS','650.123.5234',TO_DATE('2007/11/16','YYYY/MM/DD'),'ST_MAN',5800,NULL,100,50);
+INSERT INTO employees VALUES(141,'Trenna','Rajs','TRAJS','650.121.8009',TO_DATE('2003/10/17','YYYY/MM/DD'),'ST_CLERK',3500,NULL,124,50);
+INSERT INTO employees VALUES(142,'Curtis','Davies','CDAVIES','650.121.2994',TO_DATE('2005/01/29','YYYY/MM/DD'),'ST_CLERK',3100,NULL,124,50);
+INSERT INTO employees VALUES(143,'Randall','Matos','RMATOS','650.121.2874',TO_DATE('2006/03/15','YYYY/MM/DD'),'ST_CLERK',2600,NULL,124,50);
+INSERT INTO employees VALUES(144,'Peter','Vargas','PVARGAS','650.121.2004',TO_DATE('2006/07/09','YYYY/MM/DD'),'ST_CLERK',2500,NULL,124,50);
+INSERT INTO employees VALUES(149,'Eleni','Zlotkey','EZLOTKEY','011.44.1344.429018',TO_DATE('2008/01/29','YYYY/MM/DD'),'SA_MAN',10500,.2,100,80);
+INSERT INTO employees VALUES(174,'Ellen','Abel','EABEL','011.44.1644.429267',TO_DATE('2004/05/11','YYYY/MM/DD'),'SA_REP',11000,.3,149,80);
+INSERT INTO employees VALUES(176,'Jonathon','Taylor','JTAYLOR','011.44.1644.429265',TO_DATE('2006/03/24','YYYY/MM/DD'),'SA_REP',8600,.2,149,80);
+INSERT INTO employees VALUES(178,'Kimberely','Grant','KGRANT','011.44.1644.429263',TO_DATE('2007/05/24','YYYY/MM/DD'),'SA_REP',7000,.15,149,NULL);
+
+COMMIT;
+
+
+ALTER TABLE employees ADD CONSTRAINT employees_pk_empid  PRIMARY KEY(employee_id) ; 
+ALTER TABLE employees ADD CONSTRAINT employees_fk_jobid  FOREIGN KEY(job_id)        REFERENCES jobs(job_id) ;
+ALTER TABLE employees ADD CONSTRAINT employees_fk_mgrid  FOREIGN KEY(manager_id)    REFERENCES employees(employee_id) ;
+ALTER TABLE employees ADD CONSTRAINT employees_fk_deptid FOREIGN KEY(department_id) REFERENCES departments(department_id) ; 
+
+DROP TABLE retired_emp CASCADE CONSTRAINTS PURGE ;
+
+CREATE TABLE retired_emp
+(employee_id      NUMBER(6,0),
+ first_name       VARCHAR2(20),
+ last_name        VARCHAR2(25),
+ email            VARCHAR2(25),
+ phone_number     VARCHAR2(20),
+ hire_date        DATE,
+ job_id           VARCHAR2(10),
+ salary           NUMBER(8,2),
+ commission_pct   NUMBER(2,2),
+ manager_id       NUMBER(6,0),
+ department_id    NUMBER(4,0),
+ retired_date			DATE) ;
+ 
+INSERT INTO retired_emp VALUES(121,'Adam','Fripp','AFRIPP','650.123.2234',TO_DATE('20050410','YYYYMMDD'),'ST_MAN',8200,NULL,100,50,TO_DATE('20100605','YYYYMMDD'));
+INSERT INTO retired_emp VALUES(130,'Mozhe','Atkinson','MATKINSO','650.124.6234',TO_DATE('20051030','YYYYMMDD'),'ST_CLERK',2800,NULL,121,50,TO_DATE('20120128','YYYYMMDD'));
+INSERT INTO retired_emp VALUES(132,'TJ','Olson','TJOLSON','650.124.8234',TO_DATE('20070410','YYYYMMDD'),'ST_CLERK',2100,NULL,121,50,TO_DATE('20150105','YYYYMMDD'));
+INSERT INTO retired_emp VALUES(147,'Alberto','Errazuriz','AERRAZUR','011.44.1344.429278',TO_DATE('20050310','YYYYMMDD'),'SA_MAN',12000,.3,100,80,TO_DATE('20111102','YYYYMMDD'));
+INSERT INTO retired_emp VALUES(158,'Allan','McEwen','AMCEWEN','011.44.1345.829268',TO_DATE('20040801','YYYYMMDD'),'SA_REP',9000,.35,146,80,TO_DATE('20100223','YYYYMMDD'));
+INSERT INTO retired_emp VALUES(166,'Sundar','Ande','SANDE','011.44.1346.629268',TO_DATE('20080324','YYYYMMDD'),'SA_REP',6400,.1,147,80,TO_DATE('20151201','YYYYMMDD'));
+
+COMMIT ; 
+
+
+ALTER TABLE retired_emp ADD CONSTRAINT retired__pk_empid  PRIMARY KEY(employee_id) ; 
+
+DROP TABLE job_history CASCADE CONSTRAINTS PURGE ; 
+CREATE TABLE job_history
+(employee_id   NUMBER(6), 
+ start_date    DATE, 
+ end_date      DATE,
+ job_id        VARCHAR2(10), 
+ department_id NUMBER(4))
+ ;
+
+INSERT INTO job_history VALUES (101,TO_DATE('2005/09/28','YYYY/MM/DD'),TO_DATE('2010/08/19','YYYY/MM/DD'),'AC_ACCOUNT',110);
+INSERT INTO job_history VALUES (101,TO_DATE('2005/09/30','YYYY/MM/DD'),TO_DATE('2011/07/30','YYYY/MM/DD'),'AC_MGR',110);
+INSERT INTO job_history VALUES (102,TO_DATE('2001/01/17','YYYY/MM/DD'),TO_DATE('2007/05/04','YYYY/MM/DD'),'IT_PROG',60);
+INSERT INTO job_history VALUES (174,TO_DATE('2004/05/20','YYYY/MM/DD'),TO_DATE('2010/06/13','YYYY/MM/DD'),'ST_CLERK',50);
+INSERT INTO job_history VALUES (176,TO_DATE('2006/03/28','YYYY/MM/DD'),TO_DATE('2013/07/30','YYYY/MM/DD'),'SA_REP',80);
+INSERT INTO job_history VALUES (176,TO_DATE('2006/03/30','YYYY/MM/DD'),TO_DATE('2013/12/24','YYYY/MM/DD'),'SA_MAN',80);
+INSERT INTO job_history VALUES (178,TO_DATE('2007/05/27','YYYY/MM/DD'),TO_DATE('2012/09/03','YYYY/MM/DD'),'ST_CLERK',50);
+INSERT INTO job_history VALUES (200,TO_DATE('2003/09/20','YYYY/MM/DD'),TO_DATE('2011/05/23','YYYY/MM/DD'),'AC_ACCOUNT',90);
+INSERT INTO job_history VALUES (200,TO_DATE('2003/09/24','YYYY/MM/DD'),TO_DATE('2009/08/30','YYYY/MM/DD'),'AD_ASST',90);
+INSERT INTO job_history VALUES (201,TO_DATE('2004/02/18','YYYY/MM/DD'),TO_DATE('2009/11/18','YYYY/MM/DD'),'MK_REP',20);
+
+COMMIT;
+        
+
+ALTER TABLE job_history ADD CONSTRAINT jobhist_pk       PRIMARY KEY(employee_id, start_date) ; 
+ALTER TABLE job_history ADD CONSTRAINT jobhist_fk_empid FOREIGN KEY(employee_id) REFERENCES employees(employee_id) ;
+
+       
+DROP TABLE job_grades CASCADE CONSTRAINTS PURGE ; 
+CREATE TABLE job_grades
+(grade_level VARCHAR2(3),
+ lowest_sal  NUMBER,
+ highest_sal NUMBER);
+
+INSERT INTO job_grades VALUES('A', 1000, 2999);
+INSERT INTO job_grades VALUES('B', 3000, 5999);
+INSERT INTO job_grades VALUES('C', 6000, 9999);
+INSERT INTO job_grades VALUES('D', 10000, 14999);
+INSERT INTO job_grades VALUES('E', 15000, 24999);
+INSERT INTO job_grades VALUES('F', 25000, 40000);
+
+COMMIT;
+
+
+ALTER TABLE job_grades ADD CONSTRAINT jobgrd_pk_grdlev PRIMARY KEY(grade_level) ; 
